@@ -1,0 +1,4 @@
+applications/init/
+*.pyc
+*.bak
+.DS_STORE
