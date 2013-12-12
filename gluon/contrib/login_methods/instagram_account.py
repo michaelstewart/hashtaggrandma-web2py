@@ -28,23 +28,22 @@ class InstagramAccount(object):
 
     """
 
-    def __init__(self, request, client_id=None, client_secret=None, access_token=None, redirect_uri=None):
+    def __init__(self, request, client_id=None, client_secret=None, access_token=None, redirect_uri=None, scope=["likes","comments"]):
         self.request = request
+        self.scope = scope
         self.api = client.InstagramAPI(client_id, client_secret, access_token, redirect_uri)
 
     def login_url(self, next="/"):        
-        return self.api.get_authorize_url(scope=["likes","comments"])
+        return self.api.get_authorize_url(scope=self.scope)
 
     def logout_url(self, next="/"):
         return ''
 
     def get_user(self):
         result = self.request.vars.code and self.api.exchange_code_for_access_token(self.request.vars.code)
-        print result
         if result:
-            name = result[1]['full_name']
-            rdict = dict(first_name=name,
-                username=result[1]['username'])
-            print rdict
-            return rdict
+            name = result[1]['full_name'].split(' ')
+            return dict(first_name=name[0], 
+                        last_name=' '.join(name[1:]),
+                        username=result[1]['username'])
 
